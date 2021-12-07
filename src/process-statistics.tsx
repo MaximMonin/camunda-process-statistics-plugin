@@ -14,9 +14,9 @@ const items = [
   { title: 'Running Process Instances', maxResults: '1000', path: '/history/process-instance', sortBy: 'startTime', options: {unfinished: true} },
   { title: 'Open Incidents Instances', maxResults: '1000', path: '/history/process-instance', sortBy: 'startTime', options: {unfinished: true, withIncidents: true} },
   { title: 'Last Finished Process Instances', maxResults: '1000', path: '/history/process-instance', sortBy: 'endTime', options: {finished: true} },
-  { title: 'Statistics Last Hour', maxResults: '10000', path: '/history/process-instance', sortBy: 'endTime', options: {finished: true}, startedAfter: 'hourAgo' },
-  { title: 'Statistics Last Day', maxResults: '10000', path: '/history/process-instance', sortBy: 'endTime', options: {finished: true}, startedAfter: 'dayAgo'  },
-  { title: 'Statistics Last Week', maxResults: '10000', path: '/history/process-instance', sortBy: 'endTime', options: {finished: true}, startedAfter: 'weekAgo' },
+  { title: 'Statistics Last Hour', maxResults: '100000', path: '/history/process-instance', sortBy: 'endTime', options: {finished: true}, startedAfter: 'hourAgo' },
+  { title: 'Statistics Last Day', maxResults: '100000', path: '/history/process-instance', sortBy: 'endTime', options: {finished: true}, startedAfter: 'dayAgo'  },
+  { title: 'Statistics Last Week', maxResults: '100000', path: '/history/process-instance', sortBy: 'endTime', options: {finished: true}, startedAfter: 'weekAgo' },
 ];
 
 const TableForm: any = ({ api }: any) => {

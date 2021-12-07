@@ -6779,14 +6779,13 @@ var StatisticsProcessTable = function (_a) {
                 return React.createElement(Clippy, { value: value }, value);
             },
         },
-        {
-            Header: 'Median',
-            accessor: 'median',
-            Cell: function (_a) {
-                var value = _a.value;
-                return React.createElement(Clippy, { value: value }, value);
-            },
-        },
+        /*
+              {
+                Header: 'Median',
+                accessor: 'median',
+                Cell: ({ value }: any) => <Clippy value={value}>{value}</Clippy>,
+              },
+        */
     ]; }, []);
     var _b = React.useMemo(function () {
         var counter = {};
@@ -6805,17 +6804,18 @@ var StatisticsProcessTable = function (_a) {
             counter[name] = counter[name] ? counter[name] + 1 : 1;
             totals[name] = totals[name] ? totals[name] + duration : duration;
             ids[name] = id;
-            if (!durations[name]) {
-                durations[name] = [duration];
-            }
-            else {
-                durations[name].push(duration);
-            }
+            /*
+                  if (!durations[name]) {
+                    durations[name] = [duration];
+                  } else {
+                    durations[name].push(duration);
+                  }
+            */
         }
         return [counter, totals, durations, ids];
-    }, [instances]), counter = _b[0], totals = _b[1], durations = _b[2], ids = _b[3];
+    }, [instances]), counter = _b[0], totals = _b[1]; _b[2]; var ids = _b[3];
     var processNames = React.useMemo(function () {
-        var processNames = Object.keys(durations);
+        var processNames = Object.keys(totals);
         processNames.sort(function (a, b) {
             if (totals[a] > totals[b]) {
                 return -1;
@@ -6829,22 +6829,25 @@ var StatisticsProcessTable = function (_a) {
     }, [instances]);
     var data = React.useMemo(function () {
         return processNames.map(function (processName) {
-            durations[processName].sort(function (a, b) {
-                if (a > b) {
-                    return -1;
-                }
-                else if (a < b) {
-                    return 1;
-                }
-                return 0;
-            });
+            /*
+                    durations[processName].sort((a: number, b: number) => {
+                      if (a > b) {
+                        return -1;
+                      } else if (a < b) {
+                        return 1;
+                      }
+                      return 0;
+                    });
+            */
             return {
                 processDefinitionName: processName,
                 processDefinitionId: ids[processName],
                 instances: counter[processName],
                 duration: asctime(totals[processName]),
                 average: asctime(totals[processName] / counter[processName]),
-                median: asctime(durations[processName][Math.floor(durations[processName].length / 2)]),
+                /*
+                          median: asctime(durations[processName][Math.floor(durations[processName].length / 2)]),
+                */
             };
         });
     }, [instances]);
@@ -6915,9 +6918,9 @@ var items = [
     { title: 'Running Process Instances', maxResults: '1000', path: '/history/process-instance', sortBy: 'startTime', options: { unfinished: true } },
     { title: 'Open Incidents Instances', maxResults: '1000', path: '/history/process-instance', sortBy: 'startTime', options: { unfinished: true, withIncidents: true } },
     { title: 'Last Finished Process Instances', maxResults: '1000', path: '/history/process-instance', sortBy: 'endTime', options: { finished: true } },
-    { title: 'Statistics Last Hour', maxResults: '10000', path: '/history/process-instance', sortBy: 'endTime', options: { finished: true }, startedAfter: 'hourAgo' },
-    { title: 'Statistics Last Day', maxResults: '10000', path: '/history/process-instance', sortBy: 'endTime', options: { finished: true }, startedAfter: 'dayAgo' },
-    { title: 'Statistics Last Week', maxResults: '10000', path: '/history/process-instance', sortBy: 'endTime', options: { finished: true }, startedAfter: 'weekAgo' },
+    { title: 'Statistics Last Hour', maxResults: '100000', path: '/history/process-instance', sortBy: 'endTime', options: { finished: true }, startedAfter: 'hourAgo' },
+    { title: 'Statistics Last Day', maxResults: '100000', path: '/history/process-instance', sortBy: 'endTime', options: { finished: true }, startedAfter: 'dayAgo' },
+    { title: 'Statistics Last Week', maxResults: '100000', path: '/history/process-instance', sortBy: 'endTime', options: { finished: true }, startedAfter: 'weekAgo' },
 ];
 var TableForm = function (_a) {
     var api = _a.api;
