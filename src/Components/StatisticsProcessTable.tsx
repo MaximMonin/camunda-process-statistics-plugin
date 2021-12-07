@@ -8,10 +8,11 @@ import { Clippy } from './Clippy';
 
 interface Props {
   title: string;
+  maxResults: number;
   instances: any[];
 }
 
-const StatisticsProcessTable: React.FC<Props> = ({ title, instances }) => {
+const StatisticsProcessTable: React.FC<Props> = ({ title, maxResults, instances }) => {
   const columns = React.useMemo(
     () => [
       {
@@ -41,13 +42,11 @@ const StatisticsProcessTable: React.FC<Props> = ({ title, instances }) => {
         accessor: 'average',
         Cell: ({ value }: any) => <Clippy value={value}>{value}</Clippy>,
       },
-/*
       {
         Header: 'Median',
         accessor: 'median',
         Cell: ({ value }: any) => <Clippy value={value}>{value}</Clippy>,
       },
-*/
     ],
     []
   );
@@ -67,18 +66,16 @@ const StatisticsProcessTable: React.FC<Props> = ({ title, instances }) => {
       counter[name] = counter[name] ? counter[name] + 1 : 1;
       totals[name] = totals[name] ? totals[name] + duration : duration;
       ids[name] = id;
-/*
       if (!durations[name]) {
         durations[name] = [duration];
       } else {
         durations[name].push(duration);
       }
-*/
     }
     return [counter, totals, durations, ids];
   }, [instances]);
   const processNames = React.useMemo(() => {
-    const processNames = Object.keys(totals);
+    const processNames = Object.keys(durations);
     processNames.sort((a, b) => {
       if (totals[a] > totals[b]) {
         return -1;
@@ -92,7 +89,6 @@ const StatisticsProcessTable: React.FC<Props> = ({ title, instances }) => {
   const data = React.useMemo(
     () =>
       processNames.map((processName: string) => {
-/*
         durations[processName].sort((a: number, b: number) => {
           if (a > b) {
             return -1;
@@ -101,16 +97,13 @@ const StatisticsProcessTable: React.FC<Props> = ({ title, instances }) => {
           }
           return 0;
         });
-*/
         return {
           processDefinitionName: processName,
           processDefinitionId: ids[processName],
           instances: counter[processName],
           duration: asctime(totals[processName]),
           average: asctime(totals[processName] / counter[processName]),
-/*
           median: asctime(durations[processName][Math.floor(durations[processName].length / 2)]),
-*/
         };
       }),
     [instances]
@@ -119,7 +112,7 @@ const StatisticsProcessTable: React.FC<Props> = ({ title, instances }) => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = tableInstance;
   return (
   <div className="tabcontent">
-    <h4>{title}</h4>
+    <h4>{title} ({instances.length != maxResults ? instances.length : maxResults})</h4>
     <table className="cam-table" {...getTableProps()}>
       <thead>
         {headerGroups.map(headerGroup => (
@@ -161,7 +154,7 @@ const StatisticsProcessTable: React.FC<Props> = ({ title, instances }) => {
         })}
       </tbody>
     </table>
-  </div>   
+  </div>
   );
 };
 

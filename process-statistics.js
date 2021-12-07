@@ -78,7 +78,7 @@ function __generator(thisArg, body) {
     }
 }
 
-___$insertStylesToHeader(".tablinks.active {\n  color: black;\n  font-weight: bold;\n}");
+___$insertStylesToHeader(".tablinks.active {\n  text-decoration: underline;\n  text-decoration-thickness: 3px;\n  text-decoration-color: #b5152b;\n}");
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
@@ -6644,7 +6644,7 @@ var asctime = function (duration) {
 };
 
 var HistoryProcessTable = function (_a) {
-    var title = _a.title, instances = _a.instances;
+    var title = _a.title, maxResults = _a.maxResults, instances = _a.instances;
     var columns = React.useMemo(function () { return [
         {
             Header: 'Process Name',
@@ -6723,7 +6723,11 @@ var HistoryProcessTable = function (_a) {
     var tableInstance = reactTable.exports.useTable({ columns: columns, data: data }, reactTable.exports.useSortBy);
     var getTableProps = tableInstance.getTableProps, getTableBodyProps = tableInstance.getTableBodyProps, headerGroups = tableInstance.headerGroups, rows = tableInstance.rows, prepareRow = tableInstance.prepareRow;
     return (React.createElement("div", { className: "tabcontent" },
-        React.createElement("h4", null, title),
+        React.createElement("h4", null,
+            title,
+            " (",
+            instances.length != maxResults ? instances.length : maxResults,
+            ")"),
         React.createElement("table", __assign$1({ className: "cam-table" }, getTableProps()),
             React.createElement("thead", null, headerGroups.map(function (headerGroup) { return (React.createElement("tr", __assign$1({}, headerGroup.getHeaderGroupProps()), headerGroup.headers.map(function (column) { return (
             /* @ts-ignore */
@@ -6743,7 +6747,7 @@ var HistoryProcessTable = function (_a) {
 };
 
 var StatisticsProcessTable = function (_a) {
-    var title = _a.title, instances = _a.instances;
+    var title = _a.title, maxResults = _a.maxResults, instances = _a.instances;
     var columns = React.useMemo(function () { return [
         {
             Header: 'Process Name',
@@ -6779,13 +6783,14 @@ var StatisticsProcessTable = function (_a) {
                 return React.createElement(Clippy, { value: value }, value);
             },
         },
-        /*
-              {
-                Header: 'Median',
-                accessor: 'median',
-                Cell: ({ value }: any) => <Clippy value={value}>{value}</Clippy>,
-              },
-        */
+        {
+            Header: 'Median',
+            accessor: 'median',
+            Cell: function (_a) {
+                var value = _a.value;
+                return React.createElement(Clippy, { value: value }, value);
+            },
+        },
     ]; }, []);
     var _b = React.useMemo(function () {
         var counter = {};
@@ -6804,18 +6809,17 @@ var StatisticsProcessTable = function (_a) {
             counter[name] = counter[name] ? counter[name] + 1 : 1;
             totals[name] = totals[name] ? totals[name] + duration : duration;
             ids[name] = id;
-            /*
-                  if (!durations[name]) {
-                    durations[name] = [duration];
-                  } else {
-                    durations[name].push(duration);
-                  }
-            */
+            if (!durations[name]) {
+                durations[name] = [duration];
+            }
+            else {
+                durations[name].push(duration);
+            }
         }
         return [counter, totals, durations, ids];
-    }, [instances]), counter = _b[0], totals = _b[1]; _b[2]; var ids = _b[3];
+    }, [instances]), counter = _b[0], totals = _b[1], durations = _b[2], ids = _b[3];
     var processNames = React.useMemo(function () {
-        var processNames = Object.keys(totals);
+        var processNames = Object.keys(durations);
         processNames.sort(function (a, b) {
             if (totals[a] > totals[b]) {
                 return -1;
@@ -6829,32 +6833,33 @@ var StatisticsProcessTable = function (_a) {
     }, [instances]);
     var data = React.useMemo(function () {
         return processNames.map(function (processName) {
-            /*
-                    durations[processName].sort((a: number, b: number) => {
-                      if (a > b) {
-                        return -1;
-                      } else if (a < b) {
-                        return 1;
-                      }
-                      return 0;
-                    });
-            */
+            durations[processName].sort(function (a, b) {
+                if (a > b) {
+                    return -1;
+                }
+                else if (a < b) {
+                    return 1;
+                }
+                return 0;
+            });
             return {
                 processDefinitionName: processName,
                 processDefinitionId: ids[processName],
                 instances: counter[processName],
                 duration: asctime(totals[processName]),
                 average: asctime(totals[processName] / counter[processName]),
-                /*
-                          median: asctime(durations[processName][Math.floor(durations[processName].length / 2)]),
-                */
+                median: asctime(durations[processName][Math.floor(durations[processName].length / 2)]),
             };
         });
     }, [instances]);
     var tableInstance = reactTable.exports.useTable({ columns: columns, data: data }, reactTable.exports.useSortBy);
     var getTableProps = tableInstance.getTableProps, getTableBodyProps = tableInstance.getTableBodyProps, headerGroups = tableInstance.headerGroups, rows = tableInstance.rows, prepareRow = tableInstance.prepareRow;
     return (React.createElement("div", { className: "tabcontent" },
-        React.createElement("h4", null, title),
+        React.createElement("h4", null,
+            title,
+            " (",
+            instances.length != maxResults ? instances.length : maxResults,
+            ")"),
         React.createElement("table", __assign$1({ className: "cam-table" }, getTableProps()),
             React.createElement("thead", null, headerGroups.map(function (headerGroup) { return (React.createElement("tr", __assign$1({}, headerGroup.getHeaderGroupProps()), headerGroup.headers.map(function (column) { return (
             /* @ts-ignore */
@@ -6915,12 +6920,12 @@ var post = function (api, path, params, payload) { return __awaiter(void 0, void
 }); };
 
 var items = [
-    { title: 'Running Process Instances', maxResults: '1000', path: '/history/process-instance', sortBy: 'startTime', options: { unfinished: true } },
-    { title: 'Open Incidents Instances', maxResults: '1000', path: '/history/process-instance', sortBy: 'startTime', options: { unfinished: true, withIncidents: true } },
-    { title: 'Last Finished Process Instances', maxResults: '1000', path: '/history/process-instance', sortBy: 'endTime', options: { finished: true } },
-    { title: 'Statistics Last Hour', maxResults: '100000', path: '/history/process-instance', sortBy: 'endTime', options: { finished: true }, startedAfter: 'hourAgo' },
-    { title: 'Statistics Last Day', maxResults: '100000', path: '/history/process-instance', sortBy: 'endTime', options: { finished: true }, startedAfter: 'dayAgo' },
-    { title: 'Statistics Last Week', maxResults: '100000', path: '/history/process-instance', sortBy: 'endTime', options: { finished: true }, startedAfter: 'weekAgo' },
+    { title: 'Running Process Instances', maxResults: 1000, path: '/history/process-instance', sortBy: 'startTime', options: { unfinished: true }, type: 'table' },
+    { title: 'Open Incidents Instances', maxResults: 1000, path: '/history/process-instance', sortBy: 'startTime', options: { unfinished: true, withIncidents: true }, type: 'table' },
+    { title: 'Last Finished Process Instances', maxResults: 1000, path: '/history/process-instance', sortBy: 'endTime', options: { finished: true }, type: 'table' },
+    { title: 'Statistics Last Hour', maxResults: 100000, path: '/history/process-instance', sortBy: 'endTime', options: { finished: true }, startedAfter: 'hourAgo', type: 'stats' },
+    { title: 'Statistics Last Day', maxResults: 100000, path: '/history/process-instance', sortBy: 'endTime', options: { finished: true }, startedAfter: 'dayAgo', type: 'stats' },
+    { title: 'Statistics Last Week', maxResults: 100000, path: '/history/process-instance', sortBy: 'endTime', options: { finished: true }, startedAfter: 'weekAgo', type: 'stats' },
 ];
 var TableForm = function (_a) {
     var api = _a.api;
@@ -6949,7 +6954,7 @@ var TableForm = function (_a) {
                             }
                         }
                         _a = setInstances;
-                        return [4 /*yield*/, post(api, items[active].path, { maxResults: items[active].maxResults }, JSON.stringify(__assign$1({ sortBy: items[active].sortBy, sortOrder: 'desc' }, options)))];
+                        return [4 /*yield*/, post(api, items[active].path, { maxResults: String(items[active].maxResults) }, JSON.stringify(__assign$1({ sortBy: items[active].sortBy, sortOrder: 'desc' }, options)))];
                     case 1:
                         _a.apply(void 0, [_b.sent()]);
                         return [2 /*return*/];
@@ -6958,13 +6963,9 @@ var TableForm = function (_a) {
         }); })();
     }, [active]);
     var tabs = React.createElement("div", null,
-        React.createElement("ul", { className: 'nav nav-tabs' }, items.map(function (n, i) { return (React.createElement("button", { className: "tablinks ".concat(i === active ? 'active' : ''), style: { border: 'none', background: 'white' }, onClick: function (e) { setActive(+e.target.dataset.index); }, "data-index": i }, n.title)); })),
-        instances.length && active == 0 ? React.createElement(HistoryProcessTable, { title: items[active].title, instances: instances }) : null,
-        instances.length && active == 1 ? React.createElement(HistoryProcessTable, { title: items[active].title, instances: instances }) : null,
-        instances.length && active == 2 ? React.createElement(HistoryProcessTable, { title: items[active].title, instances: instances }) : null,
-        instances.length && active == 3 ? React.createElement(StatisticsProcessTable, { title: items[active].title, instances: instances }) : null,
-        instances.length && active == 4 ? React.createElement(StatisticsProcessTable, { title: items[active].title, instances: instances }) : null,
-        instances.length && active == 5 ? React.createElement(StatisticsProcessTable, { title: items[active].title, instances: instances }) : null,
+        React.createElement("ul", { className: 'nav nav-tabs' }, items.map(function (n, i) { return (React.createElement("button", { className: "tablinks ".concat(i === active ? 'active' : ''), style: { border: 'none', background: 'white' }, onClick: function (e) { setInstances([]); setActive(+e.target.dataset.index); }, "data-index": i }, n.title)); })),
+        instances.length && items[active].type == 'table' ? React.createElement(HistoryProcessTable, { title: items[active].title, maxResults: items[active].maxResults, instances: instances }) : null,
+        instances.length && items[active].type == 'stats' ? React.createElement(StatisticsProcessTable, { title: items[active].title, maxResults: items[active].maxResults, instances: instances }) : null,
         !instances.length ? React.createElement("div", null,
             React.createElement("h4", null, items[active].title),
             React.createElement("p", null, "No data")) : null);
@@ -6974,9 +6975,6 @@ var processStatistics = [
     {
         id: 'process-statistics',
         pluginPoint: 'cockpit.dashboard',
-        properties: {
-            label: 'Process Instances',
-        },
         render: function (node, _a) {
             var api = _a.api;
             (function () { return __awaiter(void 0, void 0, void 0, function () {

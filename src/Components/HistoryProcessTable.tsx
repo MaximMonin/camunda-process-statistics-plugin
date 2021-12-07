@@ -9,10 +9,11 @@ import { asctime } from '../utils/misc';
 
 interface Props {
   title: string;
+  maxResults: number;
   instances: any[];
 }
 
-const HistoryProcessTable: React.FC<Props> = ({ title, instances }) => {
+const HistoryProcessTable: React.FC<Props> = ({ title, maxResults, instances }) => {
   const columns = React.useMemo(
     () => [
       {
@@ -94,7 +95,7 @@ const HistoryProcessTable: React.FC<Props> = ({ title, instances }) => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = tableInstance;
   return (
   <div className="tabcontent">
-    <h4>{title}</h4>
+    <h4>{title} ({instances.length != maxResults ? instances.length : maxResults})</h4>
     <table className="cam-table" {...getTableProps()}>
       <thead>
         {headerGroups.map(headerGroup => (
@@ -136,7 +137,7 @@ const HistoryProcessTable: React.FC<Props> = ({ title, instances }) => {
         })}
       </tbody>
     </table>
-  </div>   
+  </div>
   );
 };
 
