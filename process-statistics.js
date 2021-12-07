@@ -78,6 +78,8 @@ function __generator(thisArg, body) {
     }
 }
 
+___$insertStylesToHeader(".tablinks.active {\n  color: black;\n  font-weight: bold;\n}");
+
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
 function commonjsRequire (path) {
@@ -6910,12 +6912,12 @@ var post = function (api, path, params, payload) { return __awaiter(void 0, void
 }); };
 
 var items = [
-    { title: 'Active Instances', maxResults: '1000', path: '/history/process-instance', options: { unfinished: true } },
-    { title: 'Instances With Incidents', maxResults: '1000', path: '/history/process-instance', options: { unfinished: true, withIncidents: true } },
-    { title: 'Finished Last Processes', maxResults: '1000', path: '/history/process-instance', options: { finished: true } },
-    { title: 'Stats Last Hour', maxResults: '10000', path: '/history/process-instance', options: { startedAfter: 'hourAgo' } },
-    { title: 'Stats Last Day', maxResults: '10000', path: '/history/process-instance', options: { startedAfter: 'dayAgo' } },
-    { title: 'Stats Last Week', maxResults: '10000', path: '/history/process-instance', options: { startedAfter: 'weekAgo' } },
+    { title: 'Running Process Instances', maxResults: '1000', path: '/history/process-instance', sortBy: 'startTime', options: { unfinished: true } },
+    { title: 'Open Incidents Instances', maxResults: '1000', path: '/history/process-instance', sortBy: 'startTime', options: { unfinished: true, withIncidents: true } },
+    { title: 'Last Finished Process Instances', maxResults: '1000', path: '/history/process-instance', sortBy: 'endTime', options: { finished: true } },
+    { title: 'Statistics Last Hour', maxResults: '10000', path: '/history/process-instance', sortBy: 'endTime', options: { finished: true }, startedAfter: 'hourAgo' },
+    { title: 'Statistics Last Day', maxResults: '10000', path: '/history/process-instance', sortBy: 'endTime', options: { finished: true }, startedAfter: 'dayAgo' },
+    { title: 'Statistics Last Week', maxResults: '10000', path: '/history/process-instance', sortBy: 'endTime', options: { finished: true }, startedAfter: 'weekAgo' },
 ];
 var TableForm = function (_a) {
     var api = _a.api;
@@ -6924,25 +6926,27 @@ var TableForm = function (_a) {
     // FETCH
     react.exports.useEffect(function () {
         (function () { return __awaiter(void 0, void 0, void 0, function () {
-            var hourAgo, dayAgo, weekAgo, options, _a;
+            var options, _a;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        hourAgo = new Date(new Date() - 1000 * 3600).toISOString().replace('Z', '+0000');
-                        dayAgo = new Date(new Date() - 1000 * 3600 * 24 * 1).toISOString().replace('Z', '+0000');
-                        weekAgo = new Date(new Date() - 1000 * 3600 * 24 * 7).toISOString().replace('Z', '+0000');
                         options = items[active].options;
-                        if (options.startedAfter == 'hourAgo') {
-                            options.startedAfter = hourAgo;
-                        }
-                        if (options.startedAfter == 'dayAgo') {
-                            options.startedAfter = dayAgo;
-                        }
-                        if (options.startedAfter == 'weekAgo') {
-                            options.startedAfter = weekAgo;
+                        if (items[active].startedAfter) {
+                            if (items[active].startedAfter == 'hourAgo') {
+                                /* @ts-ignore */
+                                options['startedAfter'] = new Date(new Date() - 1000 * 3600).toISOString().replace('Z', '+0000');
+                            }
+                            if (items[active].startedAfter == 'dayAgo') {
+                                /* @ts-ignore */
+                                options['startedAfter'] = new Date(new Date() - 1000 * 3600 * 24 * 1).toISOString().replace('Z', '+0000');
+                            }
+                            if (items[active].startedAfter == 'weekAgo') {
+                                /* @ts-ignore */
+                                options['startedAfter'] = new Date(new Date() - 1000 * 3600 * 24 * 7).toISOString().replace('Z', '+0000');
+                            }
                         }
                         _a = setInstances;
-                        return [4 /*yield*/, post(api, items[active].path, { maxResults: items[active].maxResults }, JSON.stringify(__assign$1({ sortBy: 'endTime', sortOrder: 'desc' }, options)))];
+                        return [4 /*yield*/, post(api, items[active].path, { maxResults: items[active].maxResults }, JSON.stringify(__assign$1({ sortBy: items[active].sortBy, sortOrder: 'desc' }, options)))];
                     case 1:
                         _a.apply(void 0, [_b.sent()]);
                         return [2 /*return*/];
@@ -6951,13 +6955,16 @@ var TableForm = function (_a) {
         }); })();
     }, [active]);
     var tabs = React.createElement("div", null,
-        React.createElement("div", { className: 'tab' }, items.map(function (n, i) { return (React.createElement("button", { className: "tablinks ".concat(i === active ? 'active' : ''), onClick: function (e) { setActive(+e.target.dataset.index); }, "data-index": i }, n.title)); })),
+        React.createElement("ul", { className: 'nav nav-tabs' }, items.map(function (n, i) { return (React.createElement("button", { className: "tablinks ".concat(i === active ? 'active' : ''), style: { border: 'none', background: 'white' }, onClick: function (e) { setActive(+e.target.dataset.index); }, "data-index": i }, n.title)); })),
         instances.length && active == 0 ? React.createElement(HistoryProcessTable, { title: items[active].title, instances: instances }) : null,
         instances.length && active == 1 ? React.createElement(HistoryProcessTable, { title: items[active].title, instances: instances }) : null,
         instances.length && active == 2 ? React.createElement(HistoryProcessTable, { title: items[active].title, instances: instances }) : null,
         instances.length && active == 3 ? React.createElement(StatisticsProcessTable, { title: items[active].title, instances: instances }) : null,
         instances.length && active == 4 ? React.createElement(StatisticsProcessTable, { title: items[active].title, instances: instances }) : null,
-        instances.length && active == 5 ? React.createElement(StatisticsProcessTable, { title: items[active].title, instances: instances }) : null);
+        instances.length && active == 5 ? React.createElement(StatisticsProcessTable, { title: items[active].title, instances: instances }) : null,
+        !instances.length ? React.createElement("div", null,
+            React.createElement("h4", null, items[active].title),
+            React.createElement("p", null, "No data")) : null);
     return (tabs);
 };
 var processStatistics = [

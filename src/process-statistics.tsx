@@ -1,3 +1,5 @@
+import './process-statistics.scss';
+
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 
@@ -9,12 +11,12 @@ import { post } from './utils/api';
 import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
 
 const items = [
-  { title: 'Active Instances', maxResults: '1000', path: '/history/process-instance', options: {unfinished: true} },
-  { title: 'Instances With Incidents', maxResults: '1000', path: '/history/process-instance', options: {unfinished: true, withIncidents: true} },
-  { title: 'Finished Last Processes', maxResults: '1000', path: '/history/process-instance', options: {finished: true} },
-  { title: 'Stats Last Hour', maxResults: '10000', path: '/history/process-instance', options: {startedAfter: 'hourAgo'} },
-  { title: 'Stats Last Day', maxResults: '10000', path: '/history/process-instance', options:  {startedAfter: 'dayAgo' } },
-  { title: 'Stats Last Week', maxResults: '10000', path: '/history/process-instance', options: {startedAfter: 'weekAgo'} },
+  { title: 'Running Process Instances', maxResults: '1000', path: '/history/process-instance', sortBy: 'startTime', options: {unfinished: true} },
+  { title: 'Open Incidents Instances', maxResults: '1000', path: '/history/process-instance', sortBy: 'startTime', options: {unfinished: true, withIncidents: true} },
+  { title: 'Last Finished Process Instances', maxResults: '1000', path: '/history/process-instance', sortBy: 'endTime', options: {finished: true} },
+  { title: 'Statistics Last Hour', maxResults: '10000', path: '/history/process-instance', sortBy: 'endTime', options: {finished: true}, startedAfter: 'hourAgo' },
+  { title: 'Statistics Last Day', maxResults: '10000', path: '/history/process-instance', sortBy: 'endTime', options: {finished: true}, startedAfter: 'dayAgo'  },
+  { title: 'Statistics Last Week', maxResults: '10000', path: '/history/process-instance', sortBy: 'endTime', options: {finished: true}, startedAfter: 'weekAgo' },
 ];
 
 const TableForm: any = ({ api }: any) => {
@@ -24,30 +26,28 @@ const TableForm: any = ({ api }: any) => {
   // FETCH
   useEffect(() => {
     (async () => {
-      /* @ts-ignore */
-      var hourAgo = new Date(new Date() - 1000 * 3600).toISOString().replace('Z', '+0000');
-      /* @ts-ignore */
-      var dayAgo = new Date(new Date() - 1000 * 3600 * 24 * 1).toISOString().replace('Z', '+0000');
-      /* @ts-ignore */
-      var weekAgo = new Date(new Date() - 1000 * 3600 * 24 * 7).toISOString().replace('Z', '+0000');
       var options = items[active].options;
-      if (options.startedAfter == 'hourAgo') {
-        options.startedAfter = hourAgo;
+      if (items[active].startedAfter) {
+        if (items[active].startedAfter == 'hourAgo') {
+          /* @ts-ignore */
+          options['startedAfter'] = new Date(new Date() - 1000 * 3600).toISOString().replace('Z', '+0000');
+        }
+        if (items[active].startedAfter == 'dayAgo') {
+          /* @ts-ignore */
+          options['startedAfter'] = new Date(new Date() - 1000 * 3600 * 24 * 1).toISOString().replace('Z', '+0000');
+        }
+        if (items[active].startedAfter == 'weekAgo') {
+          /* @ts-ignore */
+          options['startedAfter'] = new Date(new Date() - 1000 * 3600 * 24 * 7).toISOString().replace('Z', '+0000');
+        }
       }
-      if (options.startedAfter == 'dayAgo') {
-        options.startedAfter = dayAgo;
-      }
-      if (options.startedAfter == 'weekAgo') {
-        options.startedAfter = weekAgo;
-      }
-
       setInstances(
         await post(
           api,
           items[active].path,
           { maxResults: items[active].maxResults },
           JSON.stringify({
-            sortBy: 'endTime',
+            sortBy: items[active].sortBy,
             sortOrder: 'desc',
             ...options,
           })
@@ -58,21 +58,23 @@ const TableForm: any = ({ api }: any) => {
 
   const tabs =
     <div>
-      <div className='tab'>
+      <ul className='nav nav-tabs'>
         {items.map((n, i) => (
 	         <button
-        	  className={`tablinks ${i === active ? 'active' : ''}`}
-	          onClick={(e: any) => {setActive(+e.target.dataset.index);}}
-        	  data-index={i}
-	         >{n.title}</button>
+           className={`tablinks ${i === active ? 'active' : ''}`}
+           style={{border: 'none', background:'white'}}
+           onClick={(e: any) => {setActive(+e.target.dataset.index);}}
+           data-index={i}
+           >{n.title}</button>
 	      ))}
-      </div>
+      </ul>
       {instances.length && active == 0 ? <HistoryProcessTable title={items[active].title} instances={instances} /> : null}
       {instances.length && active == 1 ? <HistoryProcessTable title={items[active].title} instances={instances} /> : null}
       {instances.length && active == 2 ? <HistoryProcessTable title={items[active].title} instances={instances} /> : null}
       {instances.length && active == 3 ? <StatisticsProcessTable title={items[active].title} instances={instances} /> : null}
       {instances.length && active == 4 ? <StatisticsProcessTable title={items[active].title} instances={instances} /> : null}
       {instances.length && active == 5 ? <StatisticsProcessTable title={items[active].title} instances={instances} /> : null}
+      {!instances.length ? <div><h4>{items[active].title}</h4><p>No data</p></div> : null}
     </div>;
   return (
     tabs
