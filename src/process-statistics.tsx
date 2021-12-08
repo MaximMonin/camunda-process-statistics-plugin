@@ -8,18 +8,30 @@ import StatisticsProcessTable from './Components/StatisticsProcessTable';
 import { StatisticsPluginParams } from './types';
 import { post } from './utils/api';
 
+const tableMessage = 'Display Max:';
+const statMessage = 'Finished Instances to analize:';
+
 const items = [
-  { title: 'Running Process Instances', maxResults: 1000, path: '/history/process-instance', sortBy: 'startTime', options: {unfinished: true}, type: 'table', links: '/process-instance/' },
-  { title: 'Open Incidents Instances', maxResults: 1000, path: '/history/process-instance', sortBy: 'startTime', options: {unfinished: true, withIncidents: true}, type: 'table', links: '/process-instance/' },
-  { title: 'Last Finished Process Instances', maxResults: 1000, path: '/history/process-instance', sortBy: 'endTime', options: {finished: true}, type: 'table', links: '/history/process-instance/' },
-  { title: 'Statistics Last Hour', maxResults: 100000, path: '/history/process-instance', sortBy: 'endTime', options: {finished: true}, startedAfter: 'hourAgo', type: 'stats', links: '' },
-  { title: 'Statistics Last Day', maxResults: 100000, path: '/history/process-instance', sortBy: 'endTime', options: {finished: true}, startedAfter: 'dayAgo', type: 'stats', links: '' },
-  { title: 'Statistics Last Week', maxResults: 100000, path: '/history/process-instance', sortBy: 'endTime', options: {finished: true}, startedAfter: 'weekAgo', type: 'stats', links: '' },
+  { title: 'Running Process Instances', defaultMaxResults: 10, selectMaxResult: [10,100,1000], selectMessage: tableMessage,
+      path: '/history/process-instance', sortBy: 'startTime', options: {unfinished: true}, type: 'table', links: '/process-instance/' },
+  { title: 'Open Incidents Instances', defaultMaxResults: 10, selectMaxResult: [10,100,1000], selectMessage: tableMessage,
+      path: '/history/process-instance', sortBy: 'startTime', options: {unfinished: true, withIncidents: true}, type: 'table', links: '/process-instance/' },
+  { title: 'Last Finished Process Instances', defaultMaxResults: 100, selectMaxResult: [100,500,1000], selectMessage: tableMessage,
+      path: '/history/process-instance', sortBy: 'endTime', options: {finished: true}, type: 'table', links: '/history/process-instance/' },
+  { title: 'Statistics Last Hour', defaultMaxResults: 1000, selectMaxResult: [1000,10000,100000], selectMessage: statMessage,
+      path: '/history/process-instance', sortBy: 'endTime', options: {finished: true}, startedAfter: 'hourAgo', type: 'stats', links: '' },
+  { title: 'Statistics Last Day', defaultMaxResults: 1000, selectMaxResult: [1000,10000,100000], selectMessage: statMessage,
+      path: '/history/process-instance', sortBy: 'endTime', options: {finished: true}, startedAfter: 'dayAgo', type: 'stats', links: '' },
+  { title: 'Statistics Last Week', defaultMaxResults: 1000, selectMaxResult: [1000,10000,100000], selectMessage: statMessage,
+      path: '/history/process-instance', sortBy: 'endTime', options: {finished: true}, startedAfter: 'weekAgo', type: 'stats', links: '' },
 ];
 
 const TableForm: any = ({ api }: any) => {
   const [active, setActive] = useState(0);
   const [instances, setInstances]: any = useState([] as any[]);
+  const [maxResults, setMaxResults] = useState(items[0].defaultMaxResults);
+  const [selectMessage, setSelectMessage] = useState(items[0].selectMessage);
+  const [selectMaxResult, setSelectMaxResults] = useState(items[0].selectMaxResult);
 
   // FETCH
   useEffect(() => {
@@ -44,7 +56,7 @@ const TableForm: any = ({ api }: any) => {
         await post(
           api,
           items[active].path,
-          { maxResults: String(items[active].maxResults) },
+          { maxResults: String(maxResults) },
           JSON.stringify({
             sortBy: items[active].sortBy,
             sortOrder: 'desc',
@@ -53,7 +65,7 @@ const TableForm: any = ({ api }: any) => {
         )
       );
     })();
-  }, [active]);
+  }, [active, maxResults]);
 
   const tabs =
     <div>
@@ -62,13 +74,31 @@ const TableForm: any = ({ api }: any) => {
 	         <button
            className={`tablinks ${i === active ? 'active' : ''}`}
            style={{border: 'none', background:'white'}}
-           onClick={(e: any) => {setInstances([]); setActive(+e.target.dataset.index);}}
+           onClick={(e: any) => {
+             setInstances([]);
+             setMaxResults(items[+e.target.dataset.index].defaultMaxResults);
+             setSelectMessage(items[+e.target.dataset.index].selectMessage);
+             setSelectMaxResults(items[+e.target.dataset.index].selectMaxResult);
+             setActive(+e.target.dataset.index);
+           }}
            data-index={i}
            >{n.title}</button>
 	      ))}
+        <a style={{marginLeft: '50px', color: 'black'}}>{selectMessage}</a>
+        <select
+          value={maxResults}
+          style={{marginLeft: '10px'}}
+          onChange={(e: any) => {setInstances([]); setMaxResults(e.target.value); }}
+        >
+          {selectMaxResult.map ((n, i) => (
+            <option>{selectMaxResult[i]}</option>
+          ))}
+        </select>
       </ul>
-      {instances.length && items[active].type == 'table' ? <HistoryProcessTable title={items[active].title} maxResults={items[active].maxResults} links={items[active].links} instances={instances} /> : null}
-      {instances.length && items[active].type == 'stats' ? <StatisticsProcessTable title={items[active].title} maxResults={items[active].maxResults} instances={instances} /> : null}
+      {instances.length && items[active].type == 'table' ? <HistoryProcessTable title={items[active].title}
+          maxResults={maxResults} links={items[active].links} instances={instances} /> : null}
+      {instances.length && items[active].type == 'stats' ? <StatisticsProcessTable title={items[active].title}
+          maxResults={maxResults} instances={instances} /> : null}
       {!instances.length ? <div><h4>{items[active].title}</h4><p>No data</p></div> : null}
     </div>;
   return (

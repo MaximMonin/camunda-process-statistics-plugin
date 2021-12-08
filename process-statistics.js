@@ -6919,18 +6919,29 @@ var post = function (api, path, params, payload) { return __awaiter(void 0, void
     });
 }); };
 
+var tableMessage = 'Display Max:';
+var statMessage = 'Finished Instances to analize:';
 var items = [
-    { title: 'Running Process Instances', maxResults: 1000, path: '/history/process-instance', sortBy: 'startTime', options: { unfinished: true }, type: 'table', links: '/process-instance/' },
-    { title: 'Open Incidents Instances', maxResults: 1000, path: '/history/process-instance', sortBy: 'startTime', options: { unfinished: true, withIncidents: true }, type: 'table', links: '/process-instance/' },
-    { title: 'Last Finished Process Instances', maxResults: 1000, path: '/history/process-instance', sortBy: 'endTime', options: { finished: true }, type: 'table', links: '/history/process-instance/' },
-    { title: 'Statistics Last Hour', maxResults: 100000, path: '/history/process-instance', sortBy: 'endTime', options: { finished: true }, startedAfter: 'hourAgo', type: 'stats', links: '' },
-    { title: 'Statistics Last Day', maxResults: 100000, path: '/history/process-instance', sortBy: 'endTime', options: { finished: true }, startedAfter: 'dayAgo', type: 'stats', links: '' },
-    { title: 'Statistics Last Week', maxResults: 100000, path: '/history/process-instance', sortBy: 'endTime', options: { finished: true }, startedAfter: 'weekAgo', type: 'stats', links: '' },
+    { title: 'Running Process Instances', defaultMaxResults: 10, selectMaxResult: [10, 100, 1000], selectMessage: tableMessage,
+        path: '/history/process-instance', sortBy: 'startTime', options: { unfinished: true }, type: 'table', links: '/process-instance/' },
+    { title: 'Open Incidents Instances', defaultMaxResults: 10, selectMaxResult: [10, 100, 1000], selectMessage: tableMessage,
+        path: '/history/process-instance', sortBy: 'startTime', options: { unfinished: true, withIncidents: true }, type: 'table', links: '/process-instance/' },
+    { title: 'Last Finished Process Instances', defaultMaxResults: 100, selectMaxResult: [100, 500, 1000], selectMessage: tableMessage,
+        path: '/history/process-instance', sortBy: 'endTime', options: { finished: true }, type: 'table', links: '/history/process-instance/' },
+    { title: 'Statistics Last Hour', defaultMaxResults: 1000, selectMaxResult: [1000, 10000, 100000], selectMessage: statMessage,
+        path: '/history/process-instance', sortBy: 'endTime', options: { finished: true }, startedAfter: 'hourAgo', type: 'stats', links: '' },
+    { title: 'Statistics Last Day', defaultMaxResults: 1000, selectMaxResult: [1000, 10000, 100000], selectMessage: statMessage,
+        path: '/history/process-instance', sortBy: 'endTime', options: { finished: true }, startedAfter: 'dayAgo', type: 'stats', links: '' },
+    { title: 'Statistics Last Week', defaultMaxResults: 1000, selectMaxResult: [1000, 10000, 100000], selectMessage: statMessage,
+        path: '/history/process-instance', sortBy: 'endTime', options: { finished: true }, startedAfter: 'weekAgo', type: 'stats', links: '' },
 ];
 var TableForm = function (_a) {
     var api = _a.api;
     var _b = react.exports.useState(0), active = _b[0], setActive = _b[1];
     var _c = react.exports.useState([]), instances = _c[0], setInstances = _c[1];
+    var _d = react.exports.useState(items[0].defaultMaxResults), maxResults = _d[0], setMaxResults = _d[1];
+    var _e = react.exports.useState(items[0].selectMessage), selectMessage = _e[0], setSelectMessage = _e[1];
+    var _f = react.exports.useState(items[0].selectMaxResult), selectMaxResult = _f[0], setSelectMaxResults = _f[1];
     // FETCH
     react.exports.useEffect(function () {
         (function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -6954,18 +6965,27 @@ var TableForm = function (_a) {
                             }
                         }
                         _a = setInstances;
-                        return [4 /*yield*/, post(api, items[active].path, { maxResults: String(items[active].maxResults) }, JSON.stringify(__assign$1({ sortBy: items[active].sortBy, sortOrder: 'desc' }, options)))];
+                        return [4 /*yield*/, post(api, items[active].path, { maxResults: String(maxResults) }, JSON.stringify(__assign$1({ sortBy: items[active].sortBy, sortOrder: 'desc' }, options)))];
                     case 1:
                         _a.apply(void 0, [_b.sent()]);
                         return [2 /*return*/];
                 }
             });
         }); })();
-    }, [active]);
+    }, [active, maxResults]);
     var tabs = React.createElement("div", null,
-        React.createElement("ul", { className: 'nav nav-tabs' }, items.map(function (n, i) { return (React.createElement("button", { className: "tablinks ".concat(i === active ? 'active' : ''), style: { border: 'none', background: 'white' }, onClick: function (e) { setInstances([]); setActive(+e.target.dataset.index); }, "data-index": i }, n.title)); })),
-        instances.length && items[active].type == 'table' ? React.createElement(HistoryProcessTable, { title: items[active].title, maxResults: items[active].maxResults, links: items[active].links, instances: instances }) : null,
-        instances.length && items[active].type == 'stats' ? React.createElement(StatisticsProcessTable, { title: items[active].title, maxResults: items[active].maxResults, instances: instances }) : null,
+        React.createElement("ul", { className: 'nav nav-tabs' },
+            items.map(function (n, i) { return (React.createElement("button", { className: "tablinks ".concat(i === active ? 'active' : ''), style: { border: 'none', background: 'white' }, onClick: function (e) {
+                    setInstances([]);
+                    setMaxResults(items[+e.target.dataset.index].defaultMaxResults);
+                    setSelectMessage(items[+e.target.dataset.index].selectMessage);
+                    setSelectMaxResults(items[+e.target.dataset.index].selectMaxResult);
+                    setActive(+e.target.dataset.index);
+                }, "data-index": i }, n.title)); }),
+            React.createElement("a", { style: { marginLeft: '50px', color: 'black' } }, selectMessage),
+            React.createElement("select", { value: maxResults, style: { marginLeft: '10px' }, onChange: function (e) { setInstances([]); setMaxResults(e.target.value); } }, selectMaxResult.map(function (n, i) { return (React.createElement("option", null, selectMaxResult[i])); }))),
+        instances.length && items[active].type == 'table' ? React.createElement(HistoryProcessTable, { title: items[active].title, maxResults: maxResults, links: items[active].links, instances: instances }) : null,
+        instances.length && items[active].type == 'stats' ? React.createElement(StatisticsProcessTable, { title: items[active].title, maxResults: maxResults, instances: instances }) : null,
         !instances.length ? React.createElement("div", null,
             React.createElement("h4", null, items[active].title),
             React.createElement("p", null, "No data")) : null);
