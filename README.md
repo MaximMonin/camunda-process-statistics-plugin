@@ -2,13 +2,13 @@
 Camunda BPM community extension providing a process statistics plugin for Camunda Cockpit 7.14+   
 Insired by Asko Soukka History Plugin https://github.com/datakurre/camunda-cockpit-plugins   
 
-![Running processes in dashboard](Running Processes.jpg)
+![Running processes in dashboard](Running.jpg)
 
 Plugin consist of 6 interative reports available in Camunda Dashbord:   
 1. Running Process Instances   
 2. Open Incedent Instances - (running processes with incidents)   
 3. Last Finished Processes (limited to 1000)   
-![Finished processes in dashboard](Finished Processes.jpg)
+![Finished processes in dashboard](Finished.jpg)
 4. Finished Process Statictics (last hour)   
 ![Process statistics in dashboard](Statistics.jpg)
 5. Finished Process Statictics (last day)   
