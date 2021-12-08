@@ -9,7 +9,7 @@ import { StatisticsPluginParams } from './types';
 import { post } from './utils/api';
 
 const tableMessage = 'Display Max:';
-const statMessage = 'Finished Instances to analize:';
+const statMessage = 'Finished Instances to analyze:';
 
 const items = [
   { title: 'Running Process Instances', defaultMaxResults: 10, selectMaxResult: [10,100,1000], selectMessage: tableMessage,

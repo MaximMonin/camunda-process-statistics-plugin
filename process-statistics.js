@@ -6920,7 +6920,7 @@ var post = function (api, path, params, payload) { return __awaiter(void 0, void
 }); };
 
 var tableMessage = 'Display Max:';
-var statMessage = 'Finished Instances to analize:';
+var statMessage = 'Finished Instances to analyze:';
 var items = [
     { title: 'Running Process Instances', defaultMaxResults: 10, selectMaxResult: [10, 100, 1000], selectMessage: tableMessage,
         path: '/history/process-instance', sortBy: 'startTime', options: { unfinished: true }, type: 'table', links: '/process-instance/' },
