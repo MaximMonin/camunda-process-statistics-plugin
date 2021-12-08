@@ -4,9 +4,9 @@ Insired by Asko Soukka History Plugin https://github.com/datakurre/camunda-cockp
 
 ![Running processes in dashboard](Running.jpg)
 
-Plugin consists of 6 interative reports available in Camunda Dashbord:   
+Plugin consists of 6 interactive reports available in Camunda Dashbord:   
 1. Running Process Instances   
-2. Open Incident Instances - (running processes with incidents)   
+2. Open Incident Instances (running processes with incidents)   
 3. Last Finished Processes (limited to 1000)   
 ![Finished processes in dashboard](Finished.jpg)
 4. Finished Processes - Statistics (last hour)   
@@ -25,4 +25,4 @@ All statistics reports analize max 100000 last finished processes and count stat
   ],
 ```
 
-Plugin uses Camunda History Database. To follow links from tabs I recommend to install also Asko History Plugin.   
+Plugin uses Camunda History Database. To follow links from Finished Processes tabs, so I recommend to install also Asko History Plugin.   
