@@ -9,12 +9,12 @@ import { StatisticsPluginParams } from './types';
 import { post } from './utils/api';
 
 const items = [
-  { title: 'Running Process Instances', maxResults: 1000, path: '/history/process-instance', sortBy: 'startTime', options: {unfinished: true}, type: 'table' },
-  { title: 'Open Incidents Instances', maxResults: 1000, path: '/history/process-instance', sortBy: 'startTime', options: {unfinished: true, withIncidents: true}, type: 'table' },
-  { title: 'Last Finished Process Instances', maxResults: 1000, path: '/history/process-instance', sortBy: 'endTime', options: {finished: true}, type: 'table' },
-  { title: 'Statistics Last Hour', maxResults: 100000, path: '/history/process-instance', sortBy: 'endTime', options: {finished: true}, startedAfter: 'hourAgo', type: 'stats' },
-  { title: 'Statistics Last Day', maxResults: 100000, path: '/history/process-instance', sortBy: 'endTime', options: {finished: true}, startedAfter: 'dayAgo', type: 'stats'  },
-  { title: 'Statistics Last Week', maxResults: 100000, path: '/history/process-instance', sortBy: 'endTime', options: {finished: true}, startedAfter: 'weekAgo', type: 'stats' },
+  { title: 'Running Process Instances', maxResults: 1000, path: '/history/process-instance', sortBy: 'startTime', options: {unfinished: true}, type: 'table', links: '/process-instance/' },
+  { title: 'Open Incidents Instances', maxResults: 1000, path: '/history/process-instance', sortBy: 'startTime', options: {unfinished: true, withIncidents: true}, type: 'table', links: '/process-instance/' },
+  { title: 'Last Finished Process Instances', maxResults: 1000, path: '/history/process-instance', sortBy: 'endTime', options: {finished: true}, type: 'table', links: '/history/process-instance/' },
+  { title: 'Statistics Last Hour', maxResults: 100000, path: '/history/process-instance', sortBy: 'endTime', options: {finished: true}, startedAfter: 'hourAgo', type: 'stats', links: '' },
+  { title: 'Statistics Last Day', maxResults: 100000, path: '/history/process-instance', sortBy: 'endTime', options: {finished: true}, startedAfter: 'dayAgo', type: 'stats', links: '' },
+  { title: 'Statistics Last Week', maxResults: 100000, path: '/history/process-instance', sortBy: 'endTime', options: {finished: true}, startedAfter: 'weekAgo', type: 'stats', links: '' },
 ];
 
 const TableForm: any = ({ api }: any) => {
@@ -67,7 +67,7 @@ const TableForm: any = ({ api }: any) => {
            >{n.title}</button>
 	      ))}
       </ul>
-      {instances.length && items[active].type == 'table' ? <HistoryProcessTable title={items[active].title} maxResults={items[active].maxResults} instances={instances} /> : null}
+      {instances.length && items[active].type == 'table' ? <HistoryProcessTable title={items[active].title} maxResults={items[active].maxResults} links={items[active].links} instances={instances} /> : null}
       {instances.length && items[active].type == 'stats' ? <StatisticsProcessTable title={items[active].title} maxResults={items[active].maxResults} instances={instances} /> : null}
       {!instances.length ? <div><h4>{items[active].title}</h4><p>No data</p></div> : null}
     </div>;

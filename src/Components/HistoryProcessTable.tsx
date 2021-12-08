@@ -10,10 +10,11 @@ import { asctime } from '../utils/misc';
 interface Props {
   title: string;
   maxResults: number;
+  links: string;
   instances: any[];
 }
 
-const HistoryProcessTable: React.FC<Props> = ({ title, maxResults, instances }) => {
+const HistoryProcessTable: React.FC<Props> = ({ title, maxResults, links, instances }) => {
   const columns = React.useMemo(
     () => [
       {
@@ -33,7 +34,7 @@ const HistoryProcessTable: React.FC<Props> = ({ title, maxResults, instances }) 
         accessor: 'id',
         Cell: ({ value }: any) => (
           <Clippy value={value}>
-            <a href={`#/history/process-instance/${value}`}>{value}</a>
+            <a href={`#${links}${value}`}>{value}</a>
           </Clippy>
         ),
       },
