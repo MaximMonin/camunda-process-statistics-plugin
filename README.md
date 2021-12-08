@@ -13,7 +13,7 @@ Plugin consists of 6 interative reports available in Camunda Dashbord:
 ![Process statistics in dashboard](Statistics.jpg)
 5. Finished Processes - Statistics (last day)   
 6. Finished Processes - Statistics (last week)   
-All statistics reports get max 100000 last finished processes and count stats data.   
+All statistics reports analize max 100000 last finished processes and count stats data.   
 
 ## Installation
 1. Just copy process-statistics.js file to camunda cockpit scripts directory.   

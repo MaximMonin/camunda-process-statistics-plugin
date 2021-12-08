@@ -6644,7 +6644,7 @@ var asctime = function (duration) {
 };
 
 var HistoryProcessTable = function (_a) {
-    var title = _a.title, maxResults = _a.maxResults, instances = _a.instances;
+    var title = _a.title, maxResults = _a.maxResults, links = _a.links, instances = _a.instances;
     var columns = React.useMemo(function () { return [
         {
             Header: 'Process Name',
@@ -6662,7 +6662,7 @@ var HistoryProcessTable = function (_a) {
             Cell: function (_a) {
                 var value = _a.value;
                 return (React.createElement(Clippy, { value: value },
-                    React.createElement("a", { href: "#/history/process-instance/".concat(value) }, value)));
+                    React.createElement("a", { href: "#".concat(links).concat(value) }, value)));
             },
         },
         {
@@ -6920,12 +6920,12 @@ var post = function (api, path, params, payload) { return __awaiter(void 0, void
 }); };
 
 var items = [
-    { title: 'Running Process Instances', maxResults: 1000, path: '/history/process-instance', sortBy: 'startTime', options: { unfinished: true }, type: 'table' },
-    { title: 'Open Incidents Instances', maxResults: 1000, path: '/history/process-instance', sortBy: 'startTime', options: { unfinished: true, withIncidents: true }, type: 'table' },
-    { title: 'Last Finished Process Instances', maxResults: 1000, path: '/history/process-instance', sortBy: 'endTime', options: { finished: true }, type: 'table' },
-    { title: 'Statistics Last Hour', maxResults: 100000, path: '/history/process-instance', sortBy: 'endTime', options: { finished: true }, startedAfter: 'hourAgo', type: 'stats' },
-    { title: 'Statistics Last Day', maxResults: 100000, path: '/history/process-instance', sortBy: 'endTime', options: { finished: true }, startedAfter: 'dayAgo', type: 'stats' },
-    { title: 'Statistics Last Week', maxResults: 100000, path: '/history/process-instance', sortBy: 'endTime', options: { finished: true }, startedAfter: 'weekAgo', type: 'stats' },
+    { title: 'Running Process Instances', maxResults: 1000, path: '/history/process-instance', sortBy: 'startTime', options: { unfinished: true }, type: 'table', links: '/process-instance/' },
+    { title: 'Open Incidents Instances', maxResults: 1000, path: '/history/process-instance', sortBy: 'startTime', options: { unfinished: true, withIncidents: true }, type: 'table', links: '/process-instance/' },
+    { title: 'Last Finished Process Instances', maxResults: 1000, path: '/history/process-instance', sortBy: 'endTime', options: { finished: true }, type: 'table', links: '/history/process-instance/' },
+    { title: 'Statistics Last Hour', maxResults: 100000, path: '/history/process-instance', sortBy: 'endTime', options: { finished: true }, startedAfter: 'hourAgo', type: 'stats', links: '' },
+    { title: 'Statistics Last Day', maxResults: 100000, path: '/history/process-instance', sortBy: 'endTime', options: { finished: true }, startedAfter: 'dayAgo', type: 'stats', links: '' },
+    { title: 'Statistics Last Week', maxResults: 100000, path: '/history/process-instance', sortBy: 'endTime', options: { finished: true }, startedAfter: 'weekAgo', type: 'stats', links: '' },
 ];
 var TableForm = function (_a) {
     var api = _a.api;
@@ -6964,7 +6964,7 @@ var TableForm = function (_a) {
     }, [active]);
     var tabs = React.createElement("div", null,
         React.createElement("ul", { className: 'nav nav-tabs' }, items.map(function (n, i) { return (React.createElement("button", { className: "tablinks ".concat(i === active ? 'active' : ''), style: { border: 'none', background: 'white' }, onClick: function (e) { setInstances([]); setActive(+e.target.dataset.index); }, "data-index": i }, n.title)); })),
-        instances.length && items[active].type == 'table' ? React.createElement(HistoryProcessTable, { title: items[active].title, maxResults: items[active].maxResults, instances: instances }) : null,
+        instances.length && items[active].type == 'table' ? React.createElement(HistoryProcessTable, { title: items[active].title, maxResults: items[active].maxResults, links: items[active].links, instances: instances }) : null,
         instances.length && items[active].type == 'stats' ? React.createElement(StatisticsProcessTable, { title: items[active].title, maxResults: items[active].maxResults, instances: instances }) : null,
         !instances.length ? React.createElement("div", null,
             React.createElement("h4", null, items[active].title),

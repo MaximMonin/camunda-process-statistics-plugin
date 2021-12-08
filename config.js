@@ -21,7 +21,7 @@ export default {
     vendor: 'Camunda'
   },
   customScripts: [
-    'srcipts/process-statistics.js'
+    'scripts/process-statistics.js'
   // 'scripts/definition-historic-activities.js',
   // 'scripts/instance-historic-activities.js',
   // 'scripts/instance-route-history.js',
