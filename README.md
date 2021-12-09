@@ -13,7 +13,7 @@ Plugin consists of 6 interactive reports available in Camunda Dashboard:
 ![Process statistics in dashboard](Statistics.jpg)
 5. Finished Processes - Statistics (last day)   
 6. Finished Processes - Statistics (last week)   
-User can select number of processes to display or number of processes to analyze
+User can select number of processes to display or number of processes to analyze.   
 All statistics reports analize up to 100000 last finished processes and count stats data per Process.   
 
 ## Installation
