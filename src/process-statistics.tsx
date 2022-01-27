@@ -10,6 +10,8 @@ import { post } from './utils/api';
 
 const tableMessage = 'Display Max:';
 const statMessage = 'Finished Instances to analyze:';
+const filterMessage = 'Filter by variable:';
+const valueMessage = 'Value:';
 
 const items = [
   { title: 'Running Process Instances', defaultMaxResults: 10, selectMaxResult: [10,100,1000], selectMessage: tableMessage,
@@ -32,11 +34,13 @@ const TableForm: any = ({ api }: any) => {
   const [maxResults, setMaxResults] = useState(items[0].defaultMaxResults);
   const [selectMessage, setSelectMessage] = useState(items[0].selectMessage);
   const [selectMaxResult, setSelectMaxResults] = useState(items[0].selectMaxResult);
+  const [filterVar, setFilterVar] = useState('');
+  const [filterValue, setFilterValue] = useState('');
 
   // FETCH
   useEffect(() => {
     (async () => {
-      var options = items[active].options;
+      var options = JSON.parse(JSON.stringify(items[active].options));
       if (items[active].startedAfter) {
         if (items[active].startedAfter == 'hourAgo') {
           /* @ts-ignore */
@@ -49,6 +53,30 @@ const TableForm: any = ({ api }: any) => {
         if (items[active].startedAfter == 'weekAgo') {
           /* @ts-ignore */
           options['startedAfter'] = new Date(new Date() - 1000 * 3600 * 24 * 7).toISOString().replace('Z', '+0000');
+        }
+      }
+      if (filterVar != '' && filterValue != '') {
+        if (filterVar == 'Process Name') {
+          /* @ts-ignore */
+          options['processDefinitionName'] = filterValue;
+        }
+        else if (filterVar == 'Instance ID') {
+          /* @ts-ignore */
+          options['processInstanceId'] = filterValue;
+        }
+        else if (filterVar == 'Business Key') {
+          /* @ts-ignore */
+          options['processInstanceBusinessKey'] = filterValue;
+        }
+        else {
+          /* @ts-ignore */
+          options['variables'] = [
+            {
+              'name': filterVar,
+              'operator': 'eq',
+              'value': filterValue
+            }
+          ];
         }
       }
 
@@ -65,7 +93,7 @@ const TableForm: any = ({ api }: any) => {
         )
       );
     })();
-  }, [active, maxResults]);
+  }, [active, maxResults, filterVar, filterValue]);
 
   const tabs =
     <div>
@@ -84,16 +112,30 @@ const TableForm: any = ({ api }: any) => {
            data-index={i}
            >{n.title}</button>
 	      ))}
-        <a style={{marginLeft: '50px', color: 'black'}}>{selectMessage}</a>
+        <a style={{marginLeft: '30px', color: 'black'}}>{selectMessage}</a>
         <select
           value={maxResults}
-          style={{marginLeft: '10px'}}
+          style={{marginLeft: '5px'}}
           onChange={(e: any) => {setInstances([]); setMaxResults(e.target.value); }}
         >
           {selectMaxResult.map ((n, i) => (
             <option>{selectMaxResult[i]}</option>
           ))}
         </select>
+        <a style={{marginLeft: '20px', color: 'black'}}>{filterMessage}</a>
+        <input
+          value={filterVar}
+          size={20}
+          style={{marginLeft: '5px'}}
+          onChange={(e: any) => {setInstances([]); setFilterVar(e.target.value); }}
+        />
+        <a style={{marginLeft: '10px', color: 'black'}}>{valueMessage}</a>
+        <input
+          value={filterValue}
+          size={25}
+          style={{marginLeft: '5px'}}
+          onChange={(e: any) => {setInstances([]); setFilterValue(e.target.value); }}
+        />
       </ul>
       {instances.length && items[active].type == 'table' ? <HistoryProcessTable title={items[active].title}
           maxResults={maxResults} links={items[active].links} instances={instances} /> : null}
