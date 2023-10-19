@@ -99,7 +99,7 @@ const TableForm: any = ({ api }: any) => {
     <div>
       <ul className='nav nav-tabs'>
         {items.map((n, i) => (
-	         <button
+         <button
            className={`tablinks ${i === active ? 'active' : ''}`}
            style={{border: 'none', background:'white'}}
            onClick={(e: any) => {
@@ -111,7 +111,7 @@ const TableForm: any = ({ api }: any) => {
            }}
            data-index={i}
            >{n.title}</button>
-	      ))}
+        ))}
         <a style={{marginLeft: '30px', color: 'black'}}>{selectMessage}</a>
         <select
           value={maxResults}
